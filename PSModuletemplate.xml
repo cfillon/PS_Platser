@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<plasterManifest
+  schemaVersion="1.1"
+  templateType="Project" xmlns="http://www.microsoft.com/schemas/PowerShell/Plaster/v1">
+  <metadata>
+    <name>Modules_Powershell_Template</name>
+    <id>86c5defe-b483-46f3-a807-d7240c9939b4</id>
+    <version>1.0.0</version>
+    <title>Modules_Powershell_LPCR</title>
+    <description>Création par template de la structure d'un module powershell</description>
+    <author>Christophe FILLON</author>
+    <tags>PowerShell, Module, ModuleManifest</tags>
+  </metadata>
+  <parameters>
+      <parameter name='ModuleName' type='text' prompt="Nom du module" store='text' />
+      <parameter name='ModuleDesc' type='text' prompt="Déscrition bref du module (Obligatoire pour la publication sur PowerShell Gallery)" store='text' />
+      <parameter name='Version' type='text' default='0.1.0'prompt="Enter le numéro de version pour ce module" store='text' />
+      <parameter name='Auteur' type='user-fullname' default='0.1.0'prompt="Enter le numéro de version pour ce module" store='text' />
+  </parameters>
+  <content></content>
+</plasterManifest>
