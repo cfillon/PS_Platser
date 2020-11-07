@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<plasterManifest schemaVersion="1.1" templateType="Project" xmlns="http://www.microsoft.com/schemas/PowerShell/Plaster/v1">
+  <metadata>
+    <name>Modules_Powershell_Template</name>
+    <id>86c5defe-b483-46f3-a807-d7240c9939b4</id>
+    <version>1.0.0</version>
+    <title>Modules_Powershell_LPCR</title>
+    <description>Création par template de la structure d'un module powershell</description>
+    <author>Christophe FILLON</author>
+    <tags>PowerShell, Module, ModuleManifest</tags>
+  </metadata>
+  <parameters>
+      <parameter name='ModuleName' type='text' prompt="Nom du module" />
+      <parameter name='ModuleDesc' type='text' prompt="Déscrition bref du module (Obligatoire pour la publication sur PowerShell Gallery)" />
+      <parameter name='Version' type='text' default='0.1.0' prompt="Enter le numéro de version initial pour ce module" />
+      <parameter name='AuthorName' type='user-fullname' prompt="Auteur du module" />
+      <parameter name='AuthorMail' type='user-email' prompt="E-Mail de l'auteur" />
+      <parameter name='CompagnyName' default='N/A' type='text' prompt='Entreprise' />
+      <parameter name='PSVersion' default='5.0' type='text' prompt='Version minimum de powsershell' />
+      
+      <parameter name="ModuleFolders" type="multichoice" prompt="Veuiilez séléctionner les dossiers à inclure" default='0,1,2'>
+        <choice label="&amp;Fonctions" help="Ajouter le dossier Fonctions au module" value="Functions" />
+        <choice label="&amp;Classes" help="Ajouter le dossier Classes au module" value="Classes" />
+        <choice label="&amp;Enums" help="Ajouter le dossier Enums au module" value="Enums" />
+        <choice label="&amp;Ressources" help="Ajouter le dossier Ressources au modulre" value="Ressources" />
+      </parameter>
+
+      <parameter name="Pester" type="choice" prompt="Inclure le dossier Pester" default='0'>
+        <choice label="&amp;Yes" help="Ajouter le dossier de test Pester à la racine" value="Yes" />
+        <choice label="&amp;No" help="Ne pas ajouter le dossier de test Pester" value="No" />
+      </parameter>
+    
+    <parameter name='Editor' type='choice' prompt="Séléctioner l'editeur (ou None):" default='1' store='text' >
+      <choice label='&amp;None' help="Pas d'editeur specifié." value="None"/>
+      <choice label='Visual Studio &amp;Code' help="Utilisation Visual Studio Code." value="VSCode"/>
+    </parameter>
+
+  </parameters>
+  <content>
+      <message>Création de la structure des dossiers</message>
+      <file source='' destination='${PLASTER_PARAM_ModuleName}' />
+      <file source='' destination='${PLASTER_PARAM_ModuleName}\Sources\Functions\Private' condition='$PLASTER_PARAM_ModuleFolders -contains "Functions"' />
+      <file source='github/gitkeep' destination='${PLASTER_PARAM_ModuleName}\Sources\Functions\Private\.gitkeep' condition='$PLASTER_PARAM_ModuleFolders -contains "Functions"' />
+      <file source='' destination='${PLASTER_PARAM_ModuleName}\Sources\Functions\Public' condition='$PLASTER_PARAM_ModuleFolders -contains "Functions"'/>
+      <file source='github/gitkeep'  destination='${PLASTER_PARAM_ModuleName}\Sources\Functions\Public\.gitkeep' condition='$PLASTER_PARAM_ModuleFolders -contains "Functions"'/>
+      <file source='' destination='${PLASTER_PARAM_ModuleName}\Sources\Classes' condition='$PLASTER_PARAM_ModuleFolders -contains "Classes"' />
+      <file source='github/gitkeep'  destination='${PLASTER_PARAM_ModuleName}\Sources\Classes\.gitkeep' condition='$PLASTER_PARAM_ModuleFolders -contains "Classes"' />
+      <file source='' destination='${PLASTER_PARAM_ModuleName}\Sources\Enums' condition='$PLASTER_PARAM_ModuleFolders -contains "Enums"' />
+      <file source='github/gitkeep'  destination='${PLASTER_PARAM_ModuleName}\Sources\Enums\.gitkeep' condition='$PLASTER_PARAM_ModuleFolders -contains "Enums"' />
+      <file source='' destination='${PLASTER_PARAM_ModuleName}\Sources\Ressources' condition='$PLASTER_PARAM_ModuleFolders -contains "Ressources"' />
+      <file source='github/gitkeep'  destination='${PLASTER_PARAM_ModuleName}\Sources\Ressources\Ressource1\.gitkeep' condition='$PLASTER_PARAM_ModuleFolders -contains "Ressources"' />
+
+      <message>`r`n-> Création module manifest</message>
+      <newModuleManifest destination='$PLASTER_PARAM_ModuleName\Sources\${PLASTER_PARAM_ModuleName}.psd1' moduleVersion='$PLASTER_PARAM_ModuleVersion' rootModule='.\${PLASTER_PARAM_ModuleName}.psm1' author='$PLASTER_PARAM_AuthorName' companyName='${PLASTER_PARAM_CompagnyName}' description='$PLASTER_PARAM_ModuleDescription' encoding='UTF8'/>
+
+      <message> Parametrage Pester pour le module: $PLASTER_PARAM_ModuleName </message>
+      <file source='' destination='${PLASTER_PARAM_ModuleName}\tests\' condition='$PLASTER_PARAM_Pester -eq "Yes"' />
+      <templateFile source='Manifest.Tests.ps1' destination='${PLASTER_PARAM_ModuleName}\tests\${PLASTER_PARAM_ModuleName}.Manifest.Tests.ps1'/>
+    
+      <message> Parametrage de l'espace de travail pour l'editeur: $PLASTER_PARAM_Editor </message>
+      <file condition="($PLASTER_PARAM_Editor -eq 'VSCode')" source='editor\VSCode\settings.json' destination='${PLASTER_PARAM_ModuleName}\.vscode\settings.json' />
+  
+    <message> Creation du fichier vscode </message>
+    <file condition="(($PLASTER_PARAM_Editor -eq 'VSCode') -and ($PLASTER_PARAM_Pester -eq 'Yes'))" source='editor\VSCode\tasks.json' destination='${PLASTER_PARAM_ModuleName}\.vscode\tasks.json' />
+
+    <message> Verification de la version minimum (4.0.3) de paster est installer. </message>
+    <requireModule name="Pester" condition="$PLASTER_PARAM_Pester -eq 'Yes'" minimumVersion="4.0.3" message="??"/>
+
+  </content>
+</plasterManifest>
